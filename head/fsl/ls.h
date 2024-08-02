@@ -24,7 +24,9 @@ namespace ls {
         printf("----\t\t\t----\t\t----\n");
         handle = _findfirst(adr.c_str(),&fileinfo);
         do {
-            printf("%s %18ld\t\t%s\n",convet_date(fileinfo.time_write).c_str(),fileinfo.size,fileinfo.name);
+            string name = fileinfo.name;
+            if(fileinfo.size == 0) name = "\033[33m"+name+"/\033[0m";
+            printf("%s %18ld\t\t%s\n",convet_date(fileinfo.time_write).c_str(),fileinfo.size,name.c_str());
         } while(!_findnext(handle,&fileinfo));
         _findclose(handle);
     }

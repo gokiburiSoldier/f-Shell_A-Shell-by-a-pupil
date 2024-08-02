@@ -30,6 +30,14 @@ namespace rw {
         }
         return 0;
     }
+    int cp(string sour,string targ) {
+        fin.open(sour,ios::binary);
+        if(fin.fail()) return 2;
+        fout.open(targ,ios::binary);
+        if(fout.fail()) return 2;
+        fout << fin.rdbuf();
+        return 0;
+    }
 }
 
 

@@ -5,7 +5,8 @@ int main(int argc,char* argv[]) {
     else {
         vector<string> doc = rl(argv[1]);
         for(string ln : doc) 
-            run::run(run::spliter(ln));
+            swt(run::run(run::spliter(ln)));
+        system("pause");
     }
     return 0;
 }

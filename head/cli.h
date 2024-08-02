@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <stdio.h>
+#include <map>
 
 #include "fsl/cd.h"
 #include "fsl/ls.h"
@@ -22,13 +23,14 @@ bool ctrl_c(DWORD signal) {
 }
 
 namespace run {
+    map<string,string> vars;
     string prom = (isAdministor() ? "\033[35m # \033[34m" : "\033[35m $ \033[34m"),
            adr = (string)("C:\\Users\\")+getenv("USERNAME"),
            user = getenv("USERNAME"),
            hostname = getenv("COMPUTERNAME");
     string readline(void) {
         string s;
-        cout << user << "@" << hostname << ' ' << adr << prom;
+        cout << "\033[32m" << user << "@" << hostname << "\033[33m " << adr << prom;
         getline(cin,s);
         cout << "\033[0m";
         return s;
@@ -59,6 +61,20 @@ namespace run {
                     if(t != "") rt.push_back(t);
                     t = "";
                     break;
+                case '$':
+                case '@':
+                    if(t != "") rt.push_back(t);
+                    t = "";
+                    sign = c;
+                    do {
+                        t += sent[i];
+                        ++ i;
+                    } while(sent[i] != sign && i < len);
+                    ++ i;
+                    t += sign;
+                    rt.push_back(t);
+                    t = "";
+                    break;
                 case '\'':
                 case '"':
                     sign = c;
@@ -84,7 +100,10 @@ namespace run {
                     if(len == 2) return 0;
                     for(i=1;adr[len-i] != '\\';++ i) adr = adr.substr(0,len-i);
                     adr = adr.substr(0,len-i);
+                }else if(t[1] == "/") {
+                    adr = adr.substr(0,2);
                 }else adr = adr2;
+                chdir(adr.c_str());
             }else return 2;
         } else if(fsl == "ls") ls::ls(adr);
         else if(fsl == "echo") eh::echo(t);
@@ -120,6 +139,20 @@ namespace run {
         else if(fsl == "+") {
             if(t.size() < 3) return -1;
             else             cout << cl::add(t[1],t[2]) << endl;
+        }else if(fsl == "-") {
+            if(t.size() < 3) return -1;
+            if(cl::compare(t[1],t[2])) cout << "-" << cl::subtra(t[2],t[1]) << endl;
+            else                       cout << cl::subtra(t[1],t[2]) << endl;
+        }else if(fsl == "df") {
+            if(t.size() < 3) return -1;
+            vars[t[1]] = t[2];
+        }else if(fsl == "rd") {
+            if(t.size() < 2) return -1;
+            else if(!vars.count(t[1])) return 3;
+            cout << vars[t[1]] << endl;
+        }else if(fsl == "cp") {
+            if(t.size() < 3) return -1;
+            rw::cp(t[1],t[2]);
         }
         else return 1;
         
