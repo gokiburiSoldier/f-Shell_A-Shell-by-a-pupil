@@ -8,12 +8,8 @@ using namespace std;
 
 namespace eh {
     string str_no_quot(string s) {
-        string rt;
-        for(int i=0;s[i] != '\0';++ i) {
-            if(i == '\'' || i == '"') continue;
-            rt += i;
-        }
-        return rt;
+        int len = s.length();
+        return s.substr(1,len-2);
     }
     bool is_str(string s) {
         char h = s[0],t = s[s.length()-1];

@@ -1,0 +1,39 @@
+void gotoxy(short x,short y) {
+        COORD pos = {x,y};
+        HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleCursorPosition(hOut, pos);
+    }
+    COORD getxy(void) {
+        HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        CONSOLE_SCREEN_BUFFER_INFO pb;
+        GetConsoleScreenBufferInfo(hOut,&pb);
+        return pb.dwCursorPosition;
+    }
+
+/* string readline2(void) {
+        string s;
+        char c;
+        cout << user << "@" << hostname << ' ' << adr << prom;
+        COORD pos = getxy();
+        while(true) {
+            if(_kbhit()) {
+                c = getch();
+                if(c == 13) break;
+                else if(c == '\b') {
+                    int len = s.length();
+                    s = s.substr(0,len-1);
+                    gotoxy(pos.X,pos.Y);
+                    cout << s << ' ';
+                    gotoxy(pos.X+len-1,pos.Y);
+                    _sleep(50);
+                    continue;
+                }
+                else s += c;
+                gotoxy(pos.X,pos.Y);
+                cout << s;
+            }
+            _sleep(50);
+        }
+        cout << "\033[0m\n";
+        return s;
+    } */

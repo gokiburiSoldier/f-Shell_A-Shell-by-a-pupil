@@ -5,20 +5,30 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <windows.h>
+#include <conio.h>
+#include <stdio.h>
 
 #include "fsl/cd.h"
 #include "fsl/ls.h"
 #include "fsl/echo.h"
 #include "fsl/rw.h"
+#include "admin.h"
+#include "fsl/calc.h"
 using namespace std;
 
+bool ctrl_c(DWORD signal) {
+    return 0;
+}
+
 namespace run {
-    string prom = "\033[35m $ \033[34m",
+    string prom = (isAdministor() ? "\033[35m # \033[34m" : "\033[35m $ \033[34m"),
            adr = (string)("C:\\Users\\")+getenv("USERNAME"),
-           user = getenv("USERNAME");
+           user = getenv("USERNAME"),
+           hostname = getenv("COMPUTERNAME");
     string readline(void) {
         string s;
-        cout << user << "@" << adr << prom;
+        cout << user << "@" << hostname << ' ' << adr << prom;
         getline(cin,s);
         cout << "\033[0m";
         return s;
@@ -27,10 +37,19 @@ namespace run {
         sent += " ";
         vector<string> rt;
         string t;
-        char c;
+        char c,sign;
+        bool isSt=false;
         int len = sent.length();
         for(int i=0;i<len;++ i) {
             c = sent[i];
+            if(isSt) {
+                t += c;
+                if(c == sign) {
+                    isSt = false;
+                    rt.push_back(t);
+                }
+                continue;
+            }
             switch(c) {
                 case '#':
                     if(t != "") rt.push_back(t);
@@ -40,6 +59,10 @@ namespace run {
                     if(t != "") rt.push_back(t);
                     t = "";
                     break;
+                case '\'':
+                case '"':
+                    sign = c;
+                    isSt = true;
                 default:
                     t += c;
             }
@@ -53,13 +76,15 @@ namespace run {
         string fsl = t[0];
         if(fsl == "cd") {
             if(t.size() == 1) return -1;
-            if(cd::exist_floder(adr+"\\"+t[1])) {
+            string adr2;
+            adr2 = adr+'\\'+(eh::is_str(t[1]) ? eh::str_no_quot(t[1]) : t[1]);
+            if(cd::exist_floder(adr2)) {
                 if(t[1] == "..") {
                     int len = adr.length(),i;
                     if(len == 2) return 0;
                     for(i=1;adr[len-i] != '\\';++ i) adr = adr.substr(0,len-i);
                     adr = adr.substr(0,len-i);
-                }else adr += "\\"+t[1];
+                }else adr = adr2;
             }else return 2;
         } else if(fsl == "ls") ls::ls(adr);
         else if(fsl == "echo") eh::echo(t);
@@ -81,14 +106,21 @@ namespace run {
             if(a == "") return -1;
             return rw::writing(adr+"\\"+a,t,a);
         }
-        else if(fsl == "prg") {
-            if(t.size() == 1) return -1;
-            string c;
+        else if(fsl == "sd" || fsl == "shutdown") {
+            string c = "shutdown ";
             int len = t.size();
             for(int i=1;i<len;++ i) c += t[i]+" ";
             system(c.c_str());
         }
         else if(fsl.length() == 2 && fsl[1] == ':') adr = fsl;
+        else if(fsl == "help") {
+            if(t.size() < 2) return -1;
+            return rw::typing("D:\\fShell\\help\\"+t[1]+".txt");
+        }
+        else if(fsl == "+") {
+            if(t.size() < 3) return -1;
+            else             cout << cl::add(t[1],t[2]) << endl;
+        }
         else return 1;
         
         return 0;
