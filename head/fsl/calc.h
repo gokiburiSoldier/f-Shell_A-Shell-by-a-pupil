@@ -58,5 +58,29 @@ bool compare(string a,string b) {
     return false;
 }
 
+string mul(string a,string b) {
+    string rt;
+    int lena=a.length(),lenb=b.length();
+    if(lena > 300 || lenb > 300) return "";
+    int ai[301]={},bi[301]={},jw,c[602]={},lenc=lena+lenb;
+    for(int i=0;i<lena;++i) ai[lena-i-1] = a[i]-'0';
+    for(int i=0;i<lenb;++i) bi[lenb-i-1] = b[i]-'0';
+    for(int i=0;i<lena;++i) {
+        jw = 0;
+        for(int j=0;j<lenb;++j) {
+            c[i+j] += ai[i]*bi[j]+jw;
+            jw = c[i+j] / 10;
+            c[i+j] %= 10;
+        }
+        c[i+lenb] = jw;
+    }
+    for(int i=lenc-1;i>=0;--i) {
+        if(c[i] == 0 && lenc > 1) --lenc;
+        else                      break;
+    }
+    for(int i=lenc-1;i >= 0;--i) rt += c[i]+'0';
+    return rt;
+}
+
 }
 #endif

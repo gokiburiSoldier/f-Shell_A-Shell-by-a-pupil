@@ -153,6 +153,9 @@ namespace run {
         }else if(fsl == "cp") {
             if(t.size() < 3) return -1;
             rw::cp(t[1],t[2]);
+        }else if(fsl == "*") {
+            if(t.size() < 3) return -1;
+            cout << cl::mul(t[1],t[2]) << endl;
         }
         else return 1;
         
