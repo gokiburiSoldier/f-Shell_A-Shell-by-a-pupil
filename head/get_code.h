@@ -37,21 +37,27 @@ const long long getcode(std::string str) {
 }
 
 namespace fff {
-    const int cd = 172459,ls = 79955,
-            echo = 311643,
-            cat = 280486,
-            cls = 252216,
-            clear = 436500,
-            quit = 297641,
-            exit = 200859,
-            wt = 167135,
-            sd = 172281,
-            shutdown = 538447,
-            s_add = 24374,
-            s_sub = 97496,
-            s_mul = 69444,
-            df = 133267,rd = 177357,
-            cp = 118505,help = 179707;
+    const int 
+    cd = 172459,
+    ls = 79955,
+    echo = 311643,
+    cat = 280486,
+    cls = 252216,
+    clear = 436500,
+    quit = 297641,
+    exit = 200859,
+    wt = 167135,
+    sd = 172281,
+    shutdown = 538447,
+    s_add = 24374,
+    s_sub = 97496,
+    s_mul = 69444,
+    df = 133267,
+    rd = 177357,
+    cp = 118505,
+    help = 179707,
+    pwd = 201510,
+    whoami = 363309;
 }
 
 #endif

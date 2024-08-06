@@ -15,6 +15,7 @@
 #include "fsl/echo.h"
 #include "fsl/rw.h"
 #include "admin.h"
+#include "progarm.h"
 #include "fsl/calc.h"
 #include "get_code.h"
 using namespace std;
@@ -103,7 +104,8 @@ namespace run {
     int run(vector<string> t) {
         if(t.empty()) return 0;
         string fsl = t[0],adr2,a,c;
-        int len;
+        int len,len2;
+        bool flag;
         switch(getcode(fsl)) {
             case fff::cd:
                 if(t.size() == 1) return -1;
@@ -186,9 +188,28 @@ namespace run {
                 if(t.size() < 3) return -1;
                 cout << cl::mul(t[1],t[2]) << endl;
                 break;
+            case fff::pwd:
+                cout << adr << endl;
+                break;
+            case fff::whoami:
+                cout << user << endl;
+                break;
             default:
-                if(fsl.length() == 2 && fsl[1] == ':') adr = fsl;
-                else return 1;
+                if(fsl.length() == 2 && fsl[1] == ':') {
+                    adr = fsl;
+                    break;
+                }
+                flag = false;
+                len = sizeof(prg::prgs);
+                for(int i=0;i<len;++i) if(fsl == prg::prgs[i]) {
+                    c = fsl+" ";
+                    len2 = t.size();
+                    for(int i=1;i<len2;++i) c += t[i]+" ";
+                    system(c.c_str());
+                    flag = true;
+                    break;
+                }
+                if(!flag) return 1;
                 break;
         }
         if(fsl != "cls" && fsl != "clear") cout << "\n";
